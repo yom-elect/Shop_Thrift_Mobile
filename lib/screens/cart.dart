@@ -31,7 +31,7 @@ class ShowCart extends StatelessWidget {
                   Spacer(),
                   Chip(
                     label: Text(
-                      '\$${cart.totalAmount.toStringAsFixed(5)}',
+                      '\$${cart.totalAmount.toStringAsFixed(3)}',
                       style: TextStyle(
                         color:
                             Theme.of(context).primaryTextTheme.headline6.color,
