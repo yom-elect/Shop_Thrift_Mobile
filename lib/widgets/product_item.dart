@@ -61,6 +61,20 @@ class ProductItem extends StatelessWidget {
                 productData.price,
                 productData.title,
               );
+              // hide one snackbar before another , prevents waiting
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text(
+                  'Added Item to cart!',
+                ),
+                duration: Duration(seconds: 2),
+                action: SnackBarAction(
+                  label: 'UNDO',
+                  onPressed: () {
+                    cart.removeSingleItem(productData.id);
+                  },
+                ),
+              ));
             },
           ),
         ),
