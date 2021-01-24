@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
+import '../providers/products.dart';
 
 class ManageProduct extends StatefulWidget {
   static const routeName = '/manage-products';
@@ -21,6 +23,13 @@ class _ManageProductState extends State<ManageProduct> {
     price: 0.0,
     imageUrl: '',
   );
+  var _initValues = {
+    'title': '',
+    'description': '',
+    'price': '',
+    'imageUrl': ''
+  };
+  var _isInit = true;
 
   @override
   void dispose() {
@@ -32,11 +41,38 @@ class _ManageProductState extends State<ManageProduct> {
     super.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      if (productId != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          'imageUrl': '',
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
   void _saveForm() {
     final isValid = _form.currentState.validate();
     if (isValid) {
       _form.currentState.save();
-      print(_editedProduct.description);
+      if (_editedProduct.id != null) {
+        Provider.of<Products>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+      } else {
+        Provider.of<Products>(context, listen: false)
+            .addProduct(_editedProduct);
+      }
+      Navigator.of(context).pop();
     }
   }
 
@@ -56,6 +92,7 @@ class _ManageProductState extends State<ManageProduct> {
             child: ListView(
               children: <Widget>[
                 TextFormField(
+                  initialValue: _initValues['title'],
                   decoration: InputDecoration(labelText: 'Title'),
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (_) {
@@ -69,7 +106,8 @@ class _ManageProductState extends State<ManageProduct> {
                   },
                   onSaved: (value) {
                     _editedProduct = Product(
-                      id: null,
+                      id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
                       title: value,
                       description: _editedProduct.description,
                       price: _editedProduct.price,
@@ -78,6 +116,7 @@ class _ManageProductState extends State<ManageProduct> {
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['price'],
                   decoration: InputDecoration(labelText: 'Price'),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -99,15 +138,17 @@ class _ManageProductState extends State<ManageProduct> {
                   },
                   onSaved: (value) {
                     _editedProduct = Product(
-                      id: null,
                       title: _editedProduct.title,
                       description: _editedProduct.description,
                       price: double.parse(value),
                       imageUrl: _editedProduct.imageUrl,
+                      id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
                     );
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['description'],
                   decoration: InputDecoration(labelText: 'Description'),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
@@ -123,7 +164,8 @@ class _ManageProductState extends State<ManageProduct> {
                   },
                   onSaved: (value) {
                     _editedProduct = Product(
-                      id: null,
+                      id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
                       title: _editedProduct.title,
                       description: value,
                       price: _editedProduct.price,
@@ -155,6 +197,7 @@ class _ManageProductState extends State<ManageProduct> {
                     ),
                     Expanded(
                         child: TextFormField(
+                      //  initialValue: _initValues['imageUrl'],
                       decoration: InputDecoration(labelText: 'Image URL'),
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
@@ -182,7 +225,8 @@ class _ManageProductState extends State<ManageProduct> {
                       },
                       onSaved: (value) {
                         _editedProduct = Product(
-                          id: null,
+                          id: _editedProduct.id,
+                          isFavorite: _editedProduct.isFavorite,
                           title: _editedProduct.title,
                           description: _editedProduct.description,
                           price: _editedProduct.price,
