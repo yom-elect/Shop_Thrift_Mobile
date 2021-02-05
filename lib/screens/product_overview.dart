@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/providers/products.dart';
+import 'package:provider/provider.dart';
 // import 'package:my_shop/widgets/app_drawer.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +24,32 @@ class ProductsOverview extends StatefulWidget {
 
 class _ProductsOverviewState extends State<ProductsOverview> {
   var _showOnlyFavoriteData = false;
+  var _isInit = true;
+  var _isLoading = false;
+
+  @override
+  void initState() {
+    // Future.delayed(Duration.zero)
+    //     .then((value) => Provider.of(context).fetchAndSet);
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _isInit = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +95,11 @@ class _ProductsOverviewState extends State<ProductsOverview> {
         ],
       ),
       drawer: SideDrawer(),
-      body: ProductsGrid(_showOnlyFavoriteData),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductsGrid(_showOnlyFavoriteData),
     );
   }
 }

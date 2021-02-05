@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/core/services/product.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -17,8 +18,23 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleFavoriteStatus() {
+  void _setFavValue(bool newStatus) {
+    isFavorite = newStatus;
+    notifyListeners();
+  }
+
+  void toggleFavoriteStatus() async {
+    final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
+    try {
+      final response =
+          await ProductService.updateFavoriteStatus(id, isFavorite);
+      if (response.statusCode >= 400) {
+        _setFavValue(oldStatus);
+      }
+    } catch (err) {
+      _setFavValue(oldStatus);
+    }
   }
 }
