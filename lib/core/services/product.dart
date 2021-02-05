@@ -6,7 +6,7 @@ class ProductService {
 
   static Future updateFavoriteStatus(String id, bool isFavorite) async {
     try {
-      return await http.patch(url + '/products/$id.json',
+      return await http.patch(url + 'products/$id.json',
           body: json.encode({
             'isFavorite': isFavorite,
           }));

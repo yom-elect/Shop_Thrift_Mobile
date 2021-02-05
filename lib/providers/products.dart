@@ -117,6 +117,9 @@ class Products with ChangeNotifier {
     try {
       final List<Product> loadedProducts = [];
       final extractedData = await ProductsService.fetchProducts();
+      if (extractedData == null) {
+        return;
+      }
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           id: prodId,
