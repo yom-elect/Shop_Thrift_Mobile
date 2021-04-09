@@ -25,17 +25,21 @@ class ProductItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushNamed(
-              ProductDetail.routeName,
-              arguments: productData.id,
-            );
-          },
-          child: Image.network(
-            productData.imageUrl,
-            fit: BoxFit.cover,
-          ),
-        ),
+            onTap: () {
+              Navigator.of(context).pushNamed(
+                ProductDetail.routeName,
+                arguments: productData.id,
+              );
+            },
+            child: Hero(
+              tag: productData.id,
+              child: FadeInImage(
+                placeholder:
+                    AssetImage('assets/images/product-placeholder.png'),
+                image: NetworkImage(productData.imageUrl),
+                fit: BoxFit.cover,
+              ),
+            )),
         footer: GridTileBar(
           backgroundColor: Colors.black87,
           leading: Consumer<Product>(
@@ -65,8 +69,8 @@ class ProductItem extends StatelessWidget {
                 productData.title,
               );
               // hide one snackbar before another , prevents waiting
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(SnackBar(
                 content: Text(
                   'Added Item to cart!',
                 ),

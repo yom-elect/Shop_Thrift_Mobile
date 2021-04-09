@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/core/helpers/custom_route.dart';
 import 'package:provider/provider.dart';
 import 'package:my_shop/screens/orders.dart';
 import 'package:my_shop/screens/user_products.dart';
@@ -28,6 +29,9 @@ class SideDrawer extends StatelessWidget {
             title: Text('Orders'),
             onTap: () {
               Navigator.of(context).pushReplacementNamed(ShowOrders.routeName);
+              // Navigator.of(context).pushReplacement(CustomRoute(
+              //   builder: (ctx) => ShowOrders(),
+              // ));
             },
           ),
           Divider(),
