@@ -83,7 +83,7 @@ class _ManageProductState extends State<ManageProduct> {
                     title: Text('An Error Occured'),
                     content: Text('Something Went Wrong'),
                     actions: <Widget>[
-                      FlatButton(
+                      TextButton(
                           onPressed: () {
                             Navigator.of(ctx).pop();
                           },

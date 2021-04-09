@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../screens/product_detail.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import '../providers/auth.dart';
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -19,6 +20,7 @@ class ProductItem extends StatelessWidget {
       listen: false,
     );
     final cart = Provider.of<Cart>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -45,7 +47,8 @@ class ProductItem extends StatelessWidget {
                     ),
                     color: Theme.of(context).accentColor,
                     onPressed: () {
-                      productData.toggleFavoriteStatus();
+                      productData.toggleFavoriteStatus(
+                          authData.token, authData.userId);
                     },
                   )),
           title: Text(
@@ -62,8 +65,8 @@ class ProductItem extends StatelessWidget {
                 productData.title,
               );
               // hide one snackbar before another , prevents waiting
-              Scaffold.of(context).hideCurrentSnackBar();
-              Scaffold.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(
                   'Added Item to cart!',
                 ),

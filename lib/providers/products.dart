@@ -6,6 +6,7 @@ import 'product.dart';
 
 // Services
 import '../core/services/products.dart';
+import '../core/services/product.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -44,6 +45,10 @@ class Products with ChangeNotifier {
   ];
 
   //var _showFavoritesOnly = false;
+  final String authToken;
+  final String userId;
+
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get favoriteItems {
     return _items.where((element) => element.isFavorite).toList();
@@ -75,7 +80,7 @@ class Products with ChangeNotifier {
     var existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
     notifyListeners();
-    final response = await ProductsService.deleteProduct(id);
+    final response = await ProductsService.deleteProduct(id, authToken);
     if (response.statusCode >= 400) {
       _items.insert(existingProductIndex, existingProduct);
       notifyListeners();
@@ -87,7 +92,7 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((element) => element.id == id);
     if (prodIndex >= 0) {
-      await ProductsService.updateProduct(id, newProduct);
+      await ProductsService.updateProduct(id, newProduct, authToken);
       _items[prodIndex] = newProduct;
       notifyListeners();
     }
@@ -95,7 +100,8 @@ class Products with ChangeNotifier {
 
   Future addProduct(Product product) async {
     try {
-      return await ProductsService.addNewProduct(product).then((response) {
+      return await ProductsService.addNewProduct(product, userId, authToken)
+          .then((response) {
         final newProduct = Product(
           title: product.title,
           description: product.description,
@@ -109,17 +115,20 @@ class Products with ChangeNotifier {
       });
     } catch (err) {
       throw err;
-      ;
     }
   }
 
-  Future fetchAndSetProducts() async {
+  Future fetchAndSetProducts([bool filterByUser = false]) async {
+    print(filterByUser);
     try {
       final List<Product> loadedProducts = [];
-      final extractedData = await ProductsService.fetchProducts();
+      final extractedData =
+          await ProductsService.fetchProducts(authToken, userId, filterByUser);
       if (extractedData == null) {
         return;
       }
+      final userFavoriteInfo =
+          await ProductService.getUserInfo(userId, authToken);
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           id: prodId,
@@ -127,7 +136,9 @@ class Products with ChangeNotifier {
           description: prodData["description"],
           imageUrl: prodData["imageUrl"],
           price: prodData["price"],
-          isFavorite: prodData["isFavorite"],
+          isFavorite: userFavoriteInfo == null
+              ? false
+              : userFavoriteInfo[prodId] ?? false,
         ));
       });
       _items = loadedProducts;

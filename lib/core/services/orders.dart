@@ -5,14 +5,11 @@ import 'package:my_shop/providers/cart.dart';
 class OrdersService {
   static const url = 'https://social-app-ac019.firebaseio.com/';
 
-  static Future addOrder(
-    List<CartItem> cartProducts,
-    double total,
-    DateTime timestamp,
-  ) async {
+  static Future addOrder(List<CartItem> cartProducts, double total,
+      DateTime timestamp, String userId, String token) async {
     try {
       return await http.post(
-        url + 'orders.json',
+        url + 'orders/$userId.json?auth=$token',
         body: json.encode({
           'amount': total,
           'dateTime': timestamp.toIso8601String(),
@@ -31,9 +28,10 @@ class OrdersService {
     }
   }
 
-  static Future<Map<String, dynamic>> fetchOrders() async {
+  static Future<Map<String, dynamic>> fetchOrders(
+      String token, String userId) async {
     try {
-      final response = await http.get(url + 'orders.json');
+      final response = await http.get(url + 'orders/$userId.json?auth=$token');
       return json.decode(response.body);
     } catch (err) {
       throw err;

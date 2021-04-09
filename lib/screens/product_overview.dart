@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:my_shop/providers/products.dart';
 import 'package:provider/provider.dart';
 // import 'package:my_shop/widgets/app_drawer.dart';
-import 'package:provider/provider.dart';
-
 import '../screens/cart.dart';
 
 import '../widgets/products_grid.dart';

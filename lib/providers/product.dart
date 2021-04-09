@@ -23,13 +23,13 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleFavoriteStatus() async {
+  void toggleFavoriteStatus(String authToken, String userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     try {
-      final response =
-          await ProductService.updateFavoriteStatus(id, isFavorite);
+      final response = await ProductService.updateFavoriteStatus(
+          id, isFavorite, authToken, userId);
       if (response.statusCode >= 400) {
         _setFavValue(oldStatus);
       }

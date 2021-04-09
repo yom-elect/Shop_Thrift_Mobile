@@ -22,13 +22,18 @@ class OrderItem {
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
 
+  final String authToken;
+  final String userId;
+
+  Orders(this.authToken, this.userId, this._orders);
+
   List<OrderItem> get orders {
     return [..._orders];
   }
 
   Future<void> fetchAndSetOrders() async {
     try {
-      final orders = await OrdersService.fetchOrders();
+      final orders = await OrdersService.fetchOrders(authToken, userId);
       final List<OrderItem> loadedOrders = [];
       if (orders == null) {
         return;
@@ -59,8 +64,8 @@ class Orders with ChangeNotifier {
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final timestamp = DateTime.now();
     try {
-      final response =
-          await OrdersService.addOrder(cartProducts, total, timestamp);
+      final response = await OrdersService.addOrder(
+          cartProducts, total, timestamp, userId, authToken);
       _orders.insert(
           0,
           OrderItem(
